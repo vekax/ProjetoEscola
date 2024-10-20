@@ -48,7 +48,7 @@ void menuAluno(struct Aluno **listaAluno){
                 printf("Aluno adicionado com sucesso");
                 break;
             case 2:
-                printf("Teste2");
+                atualizarAluno(listaAluno);
                 break;
             case 3:
                 removerAluno(listaAluno);
@@ -121,4 +121,33 @@ int removerAluno(struct Aluno **listaAluno){
         temp = temp->prox;
     }
     return 0;
+}
+
+
+int atualizarAluno(struct Aluno **listaAluno){
+
+    struct Aluno *temp = *listaAluno;
+    char string[TAM];
+    fflush(stdin);
+    printf("\nDigite o nome do aluno para atualizar: ");
+    fgets(string, TAM, stdin);
+
+    //remoção do \n deixado no final da string pelo fgets
+    size_t ln = strlen(string);
+    if(string[ln-1] == '\n') string[ln-1] = '\0';
+
+    while(temp != NULL){
+            if(!strcmp(temp->nome, string)){ //caso o aluno a ser removido seja o primeiro da lista
+            printf("\nDigite o novo nome para modificar: ");
+            fgets(string, TAM, stdin);
+            strcpy(temp->nome, string);
+            printf("\nNome atualizado com sucesso");
+            return 1;
+        }
+        temp = temp->prox;
+    }
+
+    
+    return 0;
+
 }
