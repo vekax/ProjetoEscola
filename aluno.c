@@ -12,6 +12,4 @@ struct Aluno{
     char cpf[12];
 };
 
-void menuAluno(){
-    printf("Menu aluno!\n");
-}
+
