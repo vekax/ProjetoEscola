@@ -5,3 +5,5 @@
 
 void menuAluno();
 void inserirAluno();
+void listarAluno();
+int removerAluno();
