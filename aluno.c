@@ -139,8 +139,9 @@ int atualizarAluno(struct Aluno **listaAluno){
     while(temp != NULL){
             if(!strcmp(temp->nome, string)){ //caso o aluno a ser removido seja o primeiro da lista
             printf("\nDigite o novo nome para modificar: ");
-            fgets(string, TAM, stdin);
-            strcpy(temp->nome, string);
+            fgets(temp->nome, TAM, stdin);
+            ln = strlen(temp->nome);
+            if(temp->nome[ln-1] == '\n') temp->nome[ln-1] = '\0';
             printf("\nNome atualizado com sucesso");
             return 1;
         }
