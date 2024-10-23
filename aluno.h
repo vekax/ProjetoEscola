@@ -8,3 +8,5 @@ int inserirAluno();
 int listarAluno();
 int removerAluno();
 int atualizarAluno();
+
+int validar_cpf();

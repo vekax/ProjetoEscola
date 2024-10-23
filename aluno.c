@@ -94,7 +94,7 @@ int inserirAluno(struct Aluno **listaAluno){
     fgets(novo->nome, TAM, stdin);
     printf("\nDigite o sexo do aluno ('m' ou 'f'): ");
     scanf("%c", &novo->sexo);
-    printf("\nDigite a data de nascimento do aluno no formato (ddmmaaaa)");
+    printf("\nDigite a data de nascimento do aluno no formato (ddmmaaaa): ");
     int data;
     scanf("%d", &data);
     novo->anoNascimento = data % 10000;
@@ -110,8 +110,15 @@ int inserirAluno(struct Aluno **listaAluno){
     printf("\nDigite o CPF do aluno: ");
     fflush(stdin);
     fgets(novo->cpf, 12, stdin);
-
     if(novo->cpf[12] ==  '\n') novo->cpf[12] = '\0';
+
+    if(validar_cpf(novo->cpf) == SUCESSO){
+        printf("\nCPF validado com sucesso!\n");
+    }else{
+        printf("\nCPF invalido!\nErro ao cadastrar CPF\n");
+        free(novo);
+        return ERRO;
+    }
     
     size_t ln = strlen(novo->nome);
     if(novo->nome[ln-1] ==  '\n') novo->nome[ln-1] = '\0';
@@ -184,4 +191,46 @@ int atualizarAluno(struct Aluno **listaAluno){
     
     return ERRO;
 
+}
+
+int validar_cpf(char cpf[]){
+
+    //verifica se o cpf informado tem menos de 11 digitos
+    for(int i = 0; i < 11; i++){
+        if(cpf[i] == '\0') return ERRO;
+    }
+
+    int icpf[11];
+    int soma = 0;
+    int resto1, resto2;
+    int digito1, digito2;
+
+    //conversao de tipos
+    for(int i = 0; i < 11; i++){
+        icpf[i] = cpf[i] - 48;
+    }
+
+    //calculo primeiro digito verificador
+    for(int i = 0; i < 9; i++){
+        soma += icpf[i] * (10 - i);
+    }
+
+    resto1 = soma % 11;
+
+    if(resto1 < 2) digito1 = 0;
+    else digito1 = 11 - resto1;
+
+    //calculo segundo digito verificador
+    soma = 0;
+    for(int i = 0; i < 10; i++){
+        soma += icpf[i] * (11 - i);
+    }
+
+    resto2 = soma % 11;
+    if(resto2 < 2) digito1 = 0;
+    else digito2 = 11 - resto2;
+
+    if(icpf[9] == digito1 && icpf[10] == digito2) return SUCESSO;
+
+    return ERRO;
 }
