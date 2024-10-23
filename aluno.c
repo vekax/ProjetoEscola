@@ -3,6 +3,8 @@
 #include <string.h>
 #include "aluno.h"
 #define TAM 20
+#define ERRO 0
+#define SUCESSO 1
 
 struct Aluno{
     int matricula;
@@ -11,17 +13,24 @@ struct Aluno{
     int anoNascimento;
     int mesNascimento;
     int diaNascimento;
-    char cpf[12];
+    char cpf[13];
     struct Aluno *prox;
 };
 
-void listarAluno(struct Aluno *atual) {
+int listarAluno(struct Aluno *atual) {
     printf("\nLista de alunos:");
+
+    if(atual == NULL){
+        printf("\nLista Vazia!");
+        return ERRO;
+    }
+
     while (atual != NULL) { // Corrige a condição de parada
         printf("\n Nome: %s", atual->nome);
         printf(" | Matricula: %d", atual->matricula);
         atual = atual->prox;
     }
+    return SUCESSO;
 }
 
 void menuAluno(struct Aluno **listaAluno){
@@ -30,13 +39,16 @@ void menuAluno(struct Aluno **listaAluno){
     int opcao = 1;
 
     while(sairAluno){
-        printf("\n\nMenu aluno!\n");
+
+        printf("\n\n Menu aluno \n\n");
         printf("0 - Voltar\n");
         printf("1 - Cadastrar aluno\n");
         printf("2 - Atualizar aluno\n");
         printf("3 - Excluir aluno\n");
         printf("4 - Listar alunos\n");
+        printf("\nInsira uma opcao: ");
         scanf("%d", &opcao);
+        system("cls");
 
         switch(opcao){
             case 0:
@@ -44,8 +56,7 @@ void menuAluno(struct Aluno **listaAluno){
                 printf("Voltando...\n");
                 break;
             case 1:
-                inserirAluno(listaAluno);              
-                printf("Aluno adicionado com sucesso");
+                if(inserirAluno(listaAluno)) printf("Aluno adicionado com sucesso\n");
                 break;
             case 2:
                 atualizarAluno(listaAluno);
@@ -57,21 +68,21 @@ void menuAluno(struct Aluno **listaAluno){
                 listarAluno(*listaAluno);
                 break;
             default:
-                printf("Opcao invalida!");
+                printf("\nOpcao invalida!");
                 break;
         }
     }
 
 }
 
-void inserirAluno(struct Aluno **listaAluno){
+int inserirAluno(struct Aluno **listaAluno){
     struct Aluno *novo;
     novo = malloc(sizeof(struct Aluno));
 
     //verifica se o malloc retornou NULL
     if(novo == NULL){
         printf("ERRO AO ALOCAR MEMORIA");
-        exit(1);
+        exit(ERRO);
     }
 
     novo->matricula = rand();
@@ -81,6 +92,26 @@ void inserirAluno(struct Aluno **listaAluno){
 
     fflush(stdin);
     fgets(novo->nome, TAM, stdin);
+    printf("\nDigite o sexo do aluno ('m' ou 'f'): ");
+    scanf("%c", &novo->sexo);
+    printf("\nDigite a data de nascimento do aluno no formato (ddmmaaaa)");
+    int data;
+    scanf("%d", &data);
+    novo->anoNascimento = data % 10000;
+    data /= 10000;
+    novo->mesNascimento = data % 100;
+    data /= 100;
+    novo->diaNascimento = data;
+
+    printf("\nAno nascimento: %d", novo->anoNascimento);
+    printf("\nMes nascimento: %d", novo->mesNascimento);
+    printf("\nDia nascimento: %d", novo->diaNascimento);
+
+    printf("\nDigite o CPF do aluno: ");
+    fflush(stdin);
+    fgets(novo->cpf, 12, stdin);
+
+    if(novo->cpf[12] ==  '\n') novo->cpf[12] = '\0';
     
     size_t ln = strlen(novo->nome);
     if(novo->nome[ln-1] ==  '\n') novo->nome[ln-1] = '\0';
@@ -92,6 +123,8 @@ void inserirAluno(struct Aluno **listaAluno){
         while (temp->prox != NULL) temp = temp->prox;
         temp->prox = novo;
     }
+
+    return SUCESSO;
 }
 
 int removerAluno(struct Aluno **listaAluno){
@@ -108,7 +141,7 @@ int removerAluno(struct Aluno **listaAluno){
     if(!strcmp(temp->nome, string)){ //caso o aluno a ser removido seja o primeiro da lista
         *listaAluno = temp->prox;
         free(temp);
-        return 1;
+        return SUCESSO;
     }
 
     while(temp != NULL){
@@ -116,11 +149,11 @@ int removerAluno(struct Aluno **listaAluno){
         if(!strcmp(tempprox->nome, string)){
             temp->prox = tempprox->prox;
             free(tempprox);
-            return 1;
+            return SUCESSO;
         }
         temp = temp->prox;
     }
-    return 0;
+    return ERRO;
 }
 
 
@@ -143,12 +176,12 @@ int atualizarAluno(struct Aluno **listaAluno){
             ln = strlen(temp->nome);
             if(temp->nome[ln-1] == '\n') temp->nome[ln-1] = '\0';
             printf("\nNome atualizado com sucesso");
-            return 1;
+            return SUCESSO;
         }
         temp = temp->prox;
     }
 
     
-    return 0;
+    return ERRO;
 
 }

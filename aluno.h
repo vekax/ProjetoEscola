@@ -4,7 +4,7 @@
 //prototipos
 
 void menuAluno();
-void inserirAluno();
-void listarAluno();
+int inserirAluno();
+int listarAluno();
 int removerAluno();
 int atualizarAluno();
