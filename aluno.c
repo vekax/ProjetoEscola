@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "aluno.h"
 #define TAM 20
 #define ERRO 0
@@ -16,6 +17,29 @@ struct Aluno{
     char cpf[13];
     struct Aluno *prox;
 };
+
+bool valida_data_nascimento(int dia, int mes, int ano) {
+  // Verifica se o ano é válido (entre 1900 e o ano atual)
+  if (ano < 1900 || ano > 2023) {
+    return false;
+  }
+
+  // Verifica se o mês é válido (entre 1 e 12)
+  if (mes < 1 || mes > 12) {
+    return false;
+  }
+
+  // Verifica se o dia é válido com base no mês
+  int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  if (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0)) { // Ano bissexto
+    diasNoMes[1] = 29;
+  }
+  if (dia < 1 || dia > diasNoMes[mes - 1]) {
+    return false;
+  }
+
+  return true;
+}
 
 int listarAluno(struct Aluno *atual) {
     printf("\nLista de alunos:");
