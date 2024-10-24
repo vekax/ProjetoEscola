@@ -176,18 +176,96 @@ int atualizarAluno(struct Aluno **listaAluno){
     size_t ln = strlen(string);
     if(string[ln-1] == '\n') string[ln-1] = '\0';
 
+    
+
     while(temp != NULL){
-            if(!strcmp(temp->nome, string)){ //caso o aluno a ser removido seja o primeiro da lista
-            printf("\nDigite o novo nome para modificar: ");
-            fgets(temp->nome, TAM, stdin);
-            ln = strlen(temp->nome);
-            if(temp->nome[ln-1] == '\n') temp->nome[ln-1] = '\0';
-            printf("\nNome atualizado com sucesso");
-            return SUCESSO;
+        if(!strcmp(temp->nome, string)){
+
+            int opcao = 1;
+            while(opcao){
+
+                printf("\nQual informacao deseja atualizar: ");
+                printf("\n0 - Voltar\n");
+                printf("1 - Nome\n");
+                printf("2 - Sexo\n");
+                printf("3 - Data Nascimento\n");
+                printf("4 - CPF\n");
+                printf("\nInsira uma opcao: ");
+                scanf("%d", &opcao);
+
+                system("cls");
+
+                if(opcao >= 0 && opcao <= 4) break;
+                else printf("\nDigite uma opcao valida!");
+            }
+
+            switch(opcao){
+            case 1:{
+                printf("\nDigite o novo nome para modificar: ");
+                fflush(stdin); // limpa o buffer
+                fgets(temp->nome, TAM, stdin);
+                ln = strlen(temp->nome);
+                if(temp->nome[ln-1] == '\n') temp->nome[ln-1] = '\0';
+                printf("\nNome atualizado com sucesso");
+                return SUCESSO;
+                break;
+            }
+            case 2:{
+                printf("\nDigite um novo sexo para modificar: ");
+                char tsexo;
+                fflush(stdin);
+                scanf("%c", &tsexo);
+                if(tsexo == 'm' || tsexo == 'M' || tsexo == 'f' || tsexo == 'F'){
+                    temp->sexo = tsexo;
+                    return SUCESSO;
+                }
+                else{
+                    printf("\nDigite um sexo valido ('m' ou 'f')");
+                    return ERRO;
+                }
+                break;
+            }
+            case 3:{
+                printf("\nDigite a data de nascimento do aluno no formato (ddmmaaaa): ");
+                int data;
+                scanf("%d", &data);
+                temp->anoNascimento = data % 10000;
+                data /= 10000;
+                temp->mesNascimento = data % 100;
+                data /= 100;
+                temp->diaNascimento = data;
+
+                printf("\nAno nascimento: %d", temp->anoNascimento);
+                printf("\nMes nascimento: %d", temp->mesNascimento);
+                printf("\nDia nascimento: %d", temp->diaNascimento);
+                return SUCESSO;
+                break;
+            }
+            case 4:{
+                printf("\nDigite o novo CPF: ");
+                fflush(stdin);
+                char tcpf[13];
+                fgets(tcpf, 12, stdin);
+                if(tcpf[12] ==  '\n') tcpf[12] = '\0';
+
+                if(validar_cpf(tcpf) == SUCESSO){
+                    printf("\nCPF validado com sucesso!\n");
+                    strcpy(temp->cpf, tcpf);
+                    return SUCESSO;
+                }else{
+                    printf("\nCPF invalido!\nErro ao cadastrar CPF\n");
+                    return ERRO;
+                }
+                break;
+            }
+
+        }
+            break;
         }
         temp = temp->prox;
     }
 
+    printf("\nAluno nao encontrado");
     
     return ERRO;
 
