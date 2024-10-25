@@ -18,27 +18,27 @@ struct Aluno{
     struct Aluno *prox;
 };
 
-bool valida_data_nascimento(int dia, int mes, int ano) {
-  // Verifica se o ano é válido (entre 1900 e o ano atual)
-  if (ano < 1900 || ano > 2023) {
-    return false;
+int validar_data_nascimento(int dia, int mes, int ano) {
+  // verifica se o ano é válido (entre 1900 e o ano atual)
+  if (ano < 1900 || ano > 2024) {
+    return ERRO;
   }
 
-  // Verifica se o mês é válido (entre 1 e 12)
+  // verifica se o mes é válido (entre 1 e 12)
   if (mes < 1 || mes > 12) {
-    return false;
+    return ERRO;
   }
 
-  // Verifica se o dia é válido com base no mês
+  // verifica se o dia é válido com base no mês
   int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   if (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0)) { // Ano bissexto
     diasNoMes[1] = 29;
   }
   if (dia < 1 || dia > diasNoMes[mes - 1]) {
-    return false;
+    return ERRO;
   }
 
-  return true;
+  return SUCESSO;
 }
 
 int listarAluno(struct Aluno *atual) {
@@ -119,13 +119,22 @@ int inserirAluno(struct Aluno **listaAluno){
     printf("\nDigite o sexo do aluno ('m' ou 'f'): ");
     scanf("%c", &novo->sexo);
     printf("\nDigite a data de nascimento do aluno no formato (ddmmaaaa): ");
-    int data;
+    int data, dia, mes, ano;
     scanf("%d", &data);
-    novo->anoNascimento = data % 10000;
+    ano = data % 10000;
     data /= 10000;
-    novo->mesNascimento = data % 100;
+    mes = data % 100;
     data /= 100;
-    novo->diaNascimento = data;
+    dia = data;
+
+    if(validar_data_nascimento(dia, mes, ano) == SUCESSO){
+        novo->anoNascimento = ano;
+        novo->mesNascimento = mes;
+        novo->diaNascimento = dia;
+    }else{
+        printf("\nData invalida!");
+        return ERRO;
+    }
 
     printf("\nAno nascimento: %d", novo->anoNascimento);
     printf("\nMes nascimento: %d", novo->mesNascimento);
@@ -251,13 +260,22 @@ int atualizarAluno(struct Aluno **listaAluno){
             }
             case 3:{
                 printf("\nDigite a data de nascimento do aluno no formato (ddmmaaaa): ");
-                int data;
+                int data, dia, mes, ano;
                 scanf("%d", &data);
-                temp->anoNascimento = data % 10000;
+                ano = data % 10000;
                 data /= 10000;
-                temp->mesNascimento = data % 100;
+                mes = data % 100;
                 data /= 100;
-                temp->diaNascimento = data;
+                dia = data;
+
+                if(validar_data_nascimento(dia, mes, ano) == SUCESSO){
+                    temp->anoNascimento = ano;
+                    temp->mesNascimento = mes;
+                    temp->diaNascimento = dia;
+                }else{
+                    printf("\nData invalida!");
+                    return ERRO;
+                }
 
                 printf("\nAno nascimento: %d", temp->anoNascimento);
                 printf("\nMes nascimento: %d", temp->mesNascimento);

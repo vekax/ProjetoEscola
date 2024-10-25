@@ -9,5 +9,5 @@ int listarAluno();
 int removerAluno();
 int atualizarAluno();
 
-bool valida_data_nascimento();
+int validar_data_nascimento();
 int validar_cpf();
