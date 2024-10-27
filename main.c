@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include "aluno.h"
+#include "professor.h"
+#include "disciplina.h"
 
 
 int exibirMenu(){
@@ -13,11 +15,12 @@ int exibirMenu(){
     printf("3 - Menu Disciplina\n");
     printf("\nInsira uma opcao: ");
     scanf("%d", &opcao);
+    system("cls");
     
     return opcao;
 }
 
-void menu(int opcao, struct Aluno **inicioAluno){
+void menu(int opcao, struct Aluno **inicioAluno, struct Professor **inicioProfessor, struct Disciplina **inicioDisciplina){
     switch(opcao){
         case 0:
             printf("Saindo...\n");
@@ -27,10 +30,11 @@ void menu(int opcao, struct Aluno **inicioAluno){
             menuAluno(inicioAluno);
             break;
         case 2:
-            printf("Menu Professor selecionado\n");
+            system("cls");
+            menuProfessor(inicioProfessor);
             break;
         case 3:
-            printf("Menu Materia selecionado\n");
+            menuDisciplina(inicioDisciplina, inicioAluno);
             break;
         default:
             system("cls");
@@ -44,12 +48,13 @@ int main(){
     srand(time(NULL));
 
     struct Aluno *inicioAluno = NULL;
+    struct Professor *inicioProfessor = NULL;
+    struct Disciplina *inicioDisciplina = NULL;
     int opcao = 1;
-    int qtdAluno = 0;
 
     while(opcao){
         opcao = exibirMenu();
-        menu(opcao, &inicioAluno);
+        menu(opcao, &inicioAluno, &inicioProfessor, &inicioDisciplina);
     }
     
     return 0;
