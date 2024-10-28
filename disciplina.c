@@ -13,8 +13,9 @@ struct Disciplina{
     char nome[TAM];
     char professor[TAM];
     int semestre;
-    char alunos[TAM][MAX];
+    struct Aluno *alunos[30];
     struct Disciplina *prox;
+    int vagas;
 };
 struct Aluno{
     int matricula;
@@ -45,10 +46,11 @@ int listarDisciplina(struct Disciplina *atual) {
     return SUCESSO;
 }
 
-int listarDetalhadamente(struct Disciplina **listaDisciplina){ //NAO TESTEI AINDA
-    struct Disciplina *temp = *listaDisciplina;
+int listarDetalhadamente(struct Disciplina *listaDisciplina){ 
+    struct Disciplina *temp = listaDisciplina;
     printf("Digite o nome da disciplina: ");
     char string[TAM];
+    fflush(stdin);
     fgets(string, TAM, stdin);
 
     size_t ln = strlen(string);
@@ -62,7 +64,7 @@ int listarDetalhadamente(struct Disciplina **listaDisciplina){ //NAO TESTEI AIND
             printf(" | Professor: %s", temp->professor);
             printf("\nAlunos matriculados:\n");
 
-            for(int i=0; temp->alunos[i] != NULL; i++) printf("%s\n", temp->alunos[i]);
+            for(int i=0; i < temp->vagas; i++) printf("%s\n", temp->alunos[i]->nome);
 
             return SUCESSO;
         }
@@ -73,12 +75,13 @@ int listarDetalhadamente(struct Disciplina **listaDisciplina){ //NAO TESTEI AIND
     return ERRO;
 }
 
-int matricularAluno(struct Disciplina **listaDisciplina, struct Aluno **listaAluno) { //NAO TA RODANDO, ACHO QUE EU SOU BURRO, TENTA CONSERTAR AI PLS
+int matricularAluno(struct Disciplina **listaDisciplina, struct Aluno **listaAluno) { 
     struct Disciplina *tempDisciplina = *listaDisciplina;
     struct Aluno *tempAluno = *listaAluno;
     char stringDisciplina[TAM];
 
     printf("\nDigite o nome do Disciplina que o aluno sera matriculado: ");
+    fflush(stdin);
     fgets(stringDisciplina, TAM, stdin);
     stringDisciplina[strcspn(stringDisciplina, "\n")] = 0; // remove \n
 
@@ -92,7 +95,8 @@ int matricularAluno(struct Disciplina **listaDisciplina, struct Aluno **listaAlu
             while (tempAluno != NULL) {
                 if (!strcmp(tempAluno->nome, stringAluno)) {
                     // Aloque espaço para o nome do aluno
-                    strcpy(tempDisciplina->alunos[0], tempAluno->nome);
+                    tempDisciplina->alunos[tempDisciplina->vagas] = tempAluno;
+                    tempDisciplina->vagas++;
                     return SUCESSO;
                 }
                 tempAluno = tempAluno->prox;
@@ -146,7 +150,7 @@ void menuDisciplina(struct Disciplina **listaDisciplina, struct Aluno **listaAlu
                 listarDetalhadamente(*listaDisciplina);
                 break;
             case 6:
-                matricularAluno(*listaDisciplina, *listaAluno);
+                matricularAluno(listaDisciplina, listaAluno);
                 break;
             default:
                 printf("\nOpcao invalida!");
@@ -174,8 +178,17 @@ int inserirDisciplina(struct Disciplina **listaDisciplina){
     fflush(stdin);
     fgets(novo->nome, TAM, stdin);
 
-    printf("\nDigite o semestre da Disciplina: ");
-    scanf("%d", &novo->semestre);
+    printf("\nDigite o semestre da disciplina (1-6): ");
+    int tsemestre;
+    fflush(stdin);
+    scanf("%d", &tsemestre);
+    if(tsemestre>0 && tsemestre<7){
+        novo->semestre = tsemestre;
+    }
+    else{
+        printf("\nDigite um semestre valido (1-6)");
+        return ERRO;
+    }
 
     printf("\nDigite o professor da Disciplina: ");
     fflush(stdin);
@@ -184,6 +197,8 @@ int inserirDisciplina(struct Disciplina **listaDisciplina){
     size_t ln = strlen(novo->nome);
     if(novo->nome[ln-1] ==  '\n') novo->nome[ln-1] = '\0';
 
+    novo->vagas = 0;
+
     if (*listaDisciplina == NULL) { // se a lista estiver vazia
         *listaDisciplina = novo; 
     } else {
@@ -191,6 +206,8 @@ int inserirDisciplina(struct Disciplina **listaDisciplina){
         while (temp->prox != NULL) temp = temp->prox;
         temp->prox = novo;
     }
+
+    
 
     return SUCESSO;
 }
@@ -206,7 +223,7 @@ int removerDisciplina(struct Disciplina **listaDisciplina){
     size_t ln = strlen(string);
     if(string[ln-1] == '\n') string[ln-1] = '\0';
 
-    if(!strcmp(temp->nome, string)){ //caso o Disciplina a ser removido seja o primeiro da lista
+    if(!strcmp(temp->nome, string)){ //caso a disciplina a ser removida seja a primeira da lista
         *listaDisciplina = temp->prox;
         free(temp);
         return SUCESSO;
@@ -271,11 +288,11 @@ int atualizarDisciplina(struct Disciplina **listaDisciplina){
                 break;
             }
             case 2:{
-                printf("\nDigite o novo semestre da disciplina: ");
+                printf("\nDigite o novo semestre da disciplina (1-6): ");
                 int tsemestre;
                 fflush(stdin);
                 scanf("%d", &tsemestre);
-                if(tsemestre>0 || tsemestre<7){
+                if(tsemestre>0 && tsemestre<7){
                     temp->semestre = tsemestre;
                     return SUCESSO;
                 }
