@@ -7,17 +7,6 @@
 #define ERRO 0
 #define SUCESSO 1
 
-struct Professor{
-    int matricula;
-    char nome[TAM];
-    char sexo;
-    int anoNascimento;
-    int mesNascimento;
-    int diaNascimento;
-    int diasIdade;
-    char cpf[13];
-    struct Professor *prox;
-};
 
 int listarProfessor(struct Professor *atual) {
     printf("\nLista de Professores:");

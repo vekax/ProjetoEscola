@@ -7,18 +7,7 @@
 #define ERRO 0
 #define SUCESSO 1
 
-struct Aluno{
-    int matricula;
-    char nome[TAM];
-    char sexo;
-    int anoNascimento;
-    int mesNascimento;
-    int diaNascimento;
-    int diasIdade;
-    char cpf[13];
-    int disciplinasCadastradas;
-    struct Aluno *prox;
-};
+
 
 int validar_data_nascimento(int dia, int mes, int ano) {
   // verifica se o ano é válido (entre 1900 e o ano atual)

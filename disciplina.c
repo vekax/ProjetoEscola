@@ -3,44 +3,14 @@
 #include <string.h>
 #include <stdbool.h>
 #include "disciplina.h"
+#include "aluno.h"
+#include "professor.h"
 #define TAM 20
 #define MAX 3
 #define ERRO 0
 #define SUCESSO 1
 
-struct Disciplina{
-    int codigo;
-    char nome[TAM];
-    char professor[TAM];
-    int semestre;
-    struct Aluno *alunos[30];
-    struct Disciplina *prox;
-    int vagas;
-};
-struct Aluno{
-    int matricula;
-    char nome[TAM];
-    char sexo;
-    int anoNascimento;
-    int mesNascimento;
-    int diaNascimento;
-    int diasIdade;
-    char cpf[13];
-    int disciplinasCadastradas;
-    struct Aluno *prox;
-};
 
-struct Professor{
-    int matricula;
-    char nome[TAM];
-    char sexo;
-    int anoNascimento;
-    int mesNascimento;
-    int diaNascimento;
-    int diasIdade;
-    char cpf[13];
-    struct Professor *prox;
-};
 
 int listarDisciplina(struct Disciplina *atual) {
     printf("\nLista de Disciplina:");
