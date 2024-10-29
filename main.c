@@ -34,7 +34,7 @@ void menu(int opcao, struct Aluno **inicioAluno, struct Professor **inicioProfes
             menuProfessor(inicioProfessor);
             break;
         case 3:
-            menuDisciplina(inicioDisciplina, inicioAluno);
+            menuDisciplina(inicioDisciplina, inicioAluno, inicioProfessor);
             break;
         default:
             system("cls");

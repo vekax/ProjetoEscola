@@ -14,6 +14,7 @@ struct Professor{
     int anoNascimento;
     int mesNascimento;
     int diaNascimento;
+    int diasIdade;
     char cpf[13];
     struct Professor *prox;
 };
@@ -46,7 +47,8 @@ void menuProfessor(struct Professor **listaProfessor){
         printf("1 - Cadastrar professor\n");
         printf("2 - Atualizar professor\n");
         printf("3 - Excluir professor\n");
-        printf("4 - Listar professors\n");
+        printf("4 - Listar professores\n");
+        printf("5 - Listar professores por categoria\n");
         printf("\nInsira uma opcao: ");
         scanf("%d", &opcao);
         system("cls");
@@ -68,6 +70,9 @@ void menuProfessor(struct Professor **listaProfessor){
             case 4:
                 listarProfessor(*listaProfessor);
                 break;
+            case 5:
+                relatorioProfessor(*listaProfessor);
+                break;
             default:
                 printf("\nOpcao invalida!");
                 break;
@@ -75,6 +80,156 @@ void menuProfessor(struct Professor **listaProfessor){
     }
 
 }
+
+
+
+int relatorioProfessor(struct Professor *temp){
+
+    int cont = 0;
+
+    struct Professor *aux = temp;
+
+
+    int opcao;
+
+    printf("\n\n Relatorios \n\n");
+    printf("0 - Voltar\n");
+    printf("1 - Listar professores por sexo\n");
+    printf("2 - Listar professores por nome (ordem alfabetica)\n");
+    printf("3 - Listar professores por data de nascimento\n");
+    printf("\nInsira uma opcao: ");
+    scanf("%d", &opcao);
+    system("cls");
+
+    switch(opcao){
+        case 0:
+            printf("\nVoltando...");
+            break;
+        case 1:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+            printf("\n1 - Masculino");
+            printf("\n2 - Feminino");
+            printf("\nQual sexo deseja filtrar: ");
+            scanf("%d", &opcao);
+            if(opcao == 1){
+                printf("Professores do sexo masculino: ");
+                while(temp != NULL){
+                    if(temp->sexo == 'M' || temp->sexo == 'm') printf("\n%s", temp->nome);
+                    temp = temp->prox; 
+                }
+            }else if(opcao == 2){
+                printf("Professores do sexo feminino: ");
+                while(temp != NULL){
+                    if(temp->sexo == 'F' || temp->sexo == 'f') printf("\n%s", temp->nome);
+                    temp = temp->prox; 
+                }
+            }else{
+                printf("\nInsira uma opcao valida!");
+                return ERRO;
+            }
+            break;
+        case 2:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+
+            while (temp != NULL) { //verifica a quantidade de professores cadastrados
+                cont++;
+                temp = temp->prox;
+            }
+
+            char **professor = (char**) malloc(cont * sizeof(char*)); // alocando matriz de strings
+            for(int i = 0; i < cont; i++){
+                professor[i] = (char*) malloc(TAM * sizeof(char));
+            }
+
+            for(int i = 0; i < cont; i++){
+                strcpy(professor[i], aux->nome);
+                aux = aux->prox;
+            }
+
+            char saux[TAM];
+
+            for(int i = 0; i < cont; i++){
+                for(int j = i + 1; j < cont; j++){
+                    if(strcmp(professor[i], professor[j]) > 0){
+                        strcpy(saux, professor[i]);
+                        strcpy(professor[i], professor[j]);
+                        strcpy(professor[j], saux);
+                    }
+                }
+            }
+
+            for(int i = 0; i < cont; i++){
+                printf("\n%s", professor[i]);
+            }
+
+            for (int i = 0; i < cont; i++) {
+                free(professor[i]); // libera cada string individualmente
+            }
+            free(professor);
+            break;
+        case 3:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+
+            while (temp != NULL) { //verifica a quantidade de professores cadastrados e calcula a idade em dias
+                temp->diasIdade = temp->anoNascimento * 365.3 + temp->mesNascimento * 30 + temp->diaNascimento;
+                cont++;
+                temp = temp->prox;
+            }
+            
+            int *idade = (int*) malloc(cont * sizeof(int));
+            char **professores = (char**) malloc(cont * sizeof(char*)); // alocando matriz de strings
+
+            for (int i = 0; i < cont; i++) {
+                professores[i] = (char*) malloc(TAM * sizeof(char));
+            }
+            
+            for(int i = 0; i < cont; i++){
+                idade[i] = aux->diasIdade;
+                strcpy(professores[i], aux->nome);
+                aux = aux->prox;
+            }
+
+            int iaux;
+            char naux[TAM];
+
+            for(int i = 0; i < cont; i++){
+                for(int j = i + 1; j < cont; j++){
+                    if(idade[j] > idade[i]){
+                        iaux = idade[j];
+                        idade[j] = idade[i];
+                        idade[i] = iaux;
+                        strcpy(naux, professores[j]);
+                        strcpy(professores[j], professores[i]);
+                        strcpy(professores[i], naux);
+                    }
+                }
+                printf("\nProfessor: %s", professores[i]);
+            }
+            for (int i = 0; i < cont; i++) {
+                free(professores[i]); // libera cada string individualmente
+            }
+            free(professores);
+            free(idade);
+            break;
+        default:
+            break;
+    }
+
+
+    return SUCESSO;
+}
+
+
+
 
 int inserirProfessor(struct Professor **listaProfessor){
     struct Professor *novo;
@@ -110,6 +265,7 @@ int inserirProfessor(struct Professor **listaProfessor){
         novo->diaNascimento = dia;
     }else{
         printf("\nData invalida!");
+        free(novo);
         return ERRO;
     }
 

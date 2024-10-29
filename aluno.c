@@ -16,6 +16,7 @@ struct Aluno{
     int diaNascimento;
     int diasIdade;
     char cpf[13];
+    int disciplinasCadastradas;
     struct Aluno *prox;
 };
 
@@ -32,7 +33,7 @@ int validar_data_nascimento(int dia, int mes, int ano) {
 
   // verifica se o dia é válido com base no mês
   int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-  if (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0)) { // Ano bissexto
+  if (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0)) { // ano bissexto
     diasNoMes[1] = 29;
   }
   if (dia < 1 || dia > diasNoMes[mes - 1]) {
@@ -202,7 +203,7 @@ int relatorioAluno(struct Aluno *temp){
                 return ERRO;
             }
 
-            while (temp != NULL) { //verifica a quantidade de alunos cadastrados e caulcula a idade em dias
+            while (temp != NULL) { //verifica a quantidade de alunos cadastrados e calcula a idade em dias
                 temp->diasIdade = temp->anoNascimento * 365.3 + temp->mesNascimento * 30 + temp->diaNascimento;
                 cont++;
                 temp = temp->prox;
@@ -243,6 +244,13 @@ int relatorioAluno(struct Aluno *temp){
             free(alunos);
             free(idade);
             break;
+        case 4:
+            printf("\nAlunos cadastrados em menos de 3 disciplinas: ");
+            while(temp != NULL){
+                if(temp->disciplinasCadastradas < 3) printf("\nAluno: %s | Disciplinas: %d", temp->nome, temp->disciplinasCadastradas);
+                temp = temp->prox; 
+            }
+            break;
         default:
             break;
     }
@@ -250,6 +258,8 @@ int relatorioAluno(struct Aluno *temp){
 
     return SUCESSO;
 }
+
+
 
 int inserirAluno(struct Aluno **listaAluno){
     struct Aluno *novo;
@@ -285,12 +295,15 @@ int inserirAluno(struct Aluno **listaAluno){
         novo->diaNascimento = dia;
     }else{
         printf("\nData invalida!");
+        free(novo);
         return ERRO;
     }
 
     printf("\nAno nascimento: %d", novo->anoNascimento);
     printf("\nMes nascimento: %d", novo->mesNascimento);
     printf("\nDia nascimento: %d", novo->diaNascimento);
+
+    novo->disciplinasCadastradas = 0;
 
     printf("\nDigite o CPF do aluno: ");
     fflush(stdin);

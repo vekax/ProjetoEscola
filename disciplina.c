@@ -24,8 +24,22 @@ struct Aluno{
     int anoNascimento;
     int mesNascimento;
     int diaNascimento;
+    int diasIdade;
     char cpf[13];
+    int disciplinasCadastradas;
     struct Aluno *prox;
+};
+
+struct Professor{
+    int matricula;
+    char nome[TAM];
+    char sexo;
+    int anoNascimento;
+    int mesNascimento;
+    int diaNascimento;
+    int diasIdade;
+    char cpf[13];
+    struct Professor *prox;
 };
 
 int listarDisciplina(struct Disciplina *atual) {
@@ -80,7 +94,7 @@ int matricularAluno(struct Disciplina **listaDisciplina, struct Aluno **listaAlu
     struct Aluno *tempAluno = *listaAluno;
     char stringDisciplina[TAM];
 
-    printf("\nDigite o nome do Disciplina que o aluno sera matriculado: ");
+    printf("\nDigite o nome da disciplina que o aluno sera matriculado: ");
     fflush(stdin);
     fgets(stringDisciplina, TAM, stdin);
     stringDisciplina[strcspn(stringDisciplina, "\n")] = 0; // remove \n
@@ -97,6 +111,7 @@ int matricularAluno(struct Disciplina **listaDisciplina, struct Aluno **listaAlu
                     // Aloque espaço para o nome do aluno
                     tempDisciplina->alunos[tempDisciplina->vagas] = tempAluno;
                     tempDisciplina->vagas++;
+                    tempAluno->disciplinasCadastradas++;
                     return SUCESSO;
                 }
                 tempAluno = tempAluno->prox;
@@ -110,7 +125,7 @@ int matricularAluno(struct Disciplina **listaDisciplina, struct Aluno **listaAlu
     return ERRO;
 }
 
-void menuDisciplina(struct Disciplina **listaDisciplina, struct Aluno **listaAluno){
+void menuDisciplina(struct Disciplina **listaDisciplina, struct Aluno **listaAluno, struct Professor **listaProfessor){
 
     int sairDisciplina = 1;
     int opcao = 1;
@@ -135,7 +150,7 @@ void menuDisciplina(struct Disciplina **listaDisciplina, struct Aluno **listaAlu
                 printf("Voltando...\n");
                 break;
             case 1:
-                if(inserirDisciplina(listaDisciplina)) printf("Disciplina adicionado com sucesso\n");
+                if(inserirDisciplina(listaDisciplina, listaProfessor)) printf("\nDisciplina adicionada com sucesso\n");
                 break;
             case 2:
                 atualizarDisciplina(listaDisciplina);
@@ -160,7 +175,7 @@ void menuDisciplina(struct Disciplina **listaDisciplina, struct Aluno **listaAlu
 
 }
 
-int inserirDisciplina(struct Disciplina **listaDisciplina){
+int inserirDisciplina(struct Disciplina **listaDisciplina, struct Professor **listaProfessor){
     struct Disciplina *novo;
     novo = malloc(sizeof(struct Disciplina));
 
@@ -172,11 +187,24 @@ int inserirDisciplina(struct Disciplina **listaDisciplina){
 
     novo->codigo = rand();
     novo->prox = NULL;
-    printf("\nCodigo gerada: %d", novo->codigo);
-    printf("\nDigite o nome do Disciplina: ");
+    printf("\nCodigo gerado: %d", novo->codigo);
+    printf("\nDigite o nome da Disciplina: ");
 
     fflush(stdin);
     fgets(novo->nome, TAM, stdin);
+    size_t ln = strlen(novo->nome);
+    if(novo->nome[ln-1] ==  '\n') novo->nome[ln-1] = '\0';
+
+    struct Disciplina *aux = *listaDisciplina;
+
+    while(aux != NULL){
+        if(!strcmp(aux->nome, novo->nome)){
+            printf("\nUma disciplina com esse nome ja existe !");
+            free(novo);
+            return ERRO;
+        }
+        aux = aux->prox;
+    }
 
     printf("\nDigite o semestre da disciplina (1-6): ");
     int tsemestre;
@@ -187,15 +215,29 @@ int inserirDisciplina(struct Disciplina **listaDisciplina){
     }
     else{
         printf("\nDigite um semestre valido (1-6)");
+        free(novo);
         return ERRO;
     }
 
     printf("\nDigite o professor da Disciplina: ");
     fflush(stdin);
     fgets(novo->professor, TAM, stdin);
-    
-    size_t ln = strlen(novo->nome);
-    if(novo->nome[ln-1] ==  '\n') novo->nome[ln-1] = '\0';
+
+    ln = strlen(novo->professor);
+    if(novo->professor[ln-1] ==  '\n') novo->professor[ln-1] = '\0';
+
+    struct Professor *tempProfessor = *listaProfessor;
+
+    while (tempProfessor != NULL) {
+        if (!strcmp(novo->professor, tempProfessor->nome)) break;
+        tempProfessor = tempProfessor->prox;
+    }
+
+    if(tempProfessor == NULL){ //verifica se o for anterior foi ate o final e nao achou o professor
+        printf("\nProfessor nao encontrado/cadastrado!");
+        free(novo);
+        return ERRO;
+    }
 
     novo->vagas = 0;
 
@@ -216,7 +258,7 @@ int removerDisciplina(struct Disciplina **listaDisciplina){
     struct Disciplina *temp = *listaDisciplina;
     char string[TAM];
     fflush(stdin);
-    printf("\nDigite o nome do Disciplina a ser removido: ");
+    printf("\nDigite o nome da disciplina a ser removido: ");
     fgets(string, TAM, stdin);
 
     //remoção do \n deixado no final da string pelo fgets
@@ -247,7 +289,7 @@ int atualizarDisciplina(struct Disciplina **listaDisciplina){
     struct Disciplina *temp = *listaDisciplina;
     char string[TAM];
     fflush(stdin);
-    printf("\nDigite o nome do Disciplina para atualizar: ");
+    printf("\nDigite o nome da disciplina para atualizar: ");
     fgets(string, TAM, stdin);
 
     //remoção do \n deixado no final da string pelo fgets
