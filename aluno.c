@@ -14,6 +14,7 @@ struct Aluno{
     int anoNascimento;
     int mesNascimento;
     int diaNascimento;
+    int diasIdade;
     char cpf[13];
     struct Aluno *prox;
 };
@@ -70,6 +71,7 @@ void menuAluno(struct Aluno **listaAluno){
         printf("2 - Atualizar aluno\n");
         printf("3 - Excluir aluno\n");
         printf("4 - Listar alunos\n");
+        printf("5 - Listar alunos por categoria\n");
         printf("\nInsira uma opcao: ");
         scanf("%d", &opcao);
         system("cls");
@@ -91,12 +93,162 @@ void menuAluno(struct Aluno **listaAluno){
             case 4:
                 listarAluno(*listaAluno);
                 break;
+            case 5:
+                relatorioAluno(*listaAluno);
+                break;
             default:
                 printf("\nOpcao invalida!");
                 break;
         }
     }
 
+}
+
+
+int relatorioAluno(struct Aluno *temp){
+
+    int cont = 0;
+
+    struct Aluno *aux = temp;
+
+
+    int opcao;
+
+    printf("\n\n Relatorios \n\n");
+    printf("0 - Voltar\n");
+    printf("1 - Listar alunos por sexo\n");
+    printf("2 - Listar alunos por nome (ordem alfabetica)\n");
+    printf("3 - Listar alunos por data de nascimento\n");
+    printf("4 - Listar alunos matriculados em menos de 3 disciplinas\n");
+    printf("\nInsira uma opcao: ");
+    scanf("%d", &opcao);
+    system("cls");
+
+    switch(opcao){
+        case 0:
+            printf("\nVoltando...");
+            break;
+        case 1:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+            printf("\n1 - Masculino");
+            printf("\n2 - Feminino");
+            printf("\nQual sexo deseja filtrar: ");
+            scanf("%d", &opcao);
+            if(opcao == 1){
+                printf("Alunos do sexo masculino: ");
+                while(temp != NULL){
+                    if(temp->sexo == 'M' || temp->sexo == 'm') printf("\n%s", temp->nome);
+                    temp = temp->prox; 
+                }
+            }else if(opcao == 2){
+                printf("Alunos do sexo feminino: ");
+                while(temp != NULL){
+                    if(temp->sexo == 'F' || temp->sexo == 'f') printf("\n%s", temp->nome);
+                    temp = temp->prox; 
+                }
+            }else{
+                printf("\nInsira uma opcao valida!");
+                return ERRO;
+            }
+            break;
+        case 2:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+
+            while (temp != NULL) { //verifica a quantidade de alunos cadastrados
+                cont++;
+                temp = temp->prox;
+            }
+
+            char **aluno = (char**) malloc(cont * sizeof(char*)); // alocando matriz de strings
+            for(int i = 0; i < cont; i++){
+                aluno[i] = (char*) malloc(TAM * sizeof(char));
+            }
+
+            for(int i = 0; i < cont; i++){
+                strcpy(aluno[i], aux->nome);
+                aux = aux->prox;
+            }
+
+            char saux[TAM];
+
+            for(int i = 0; i < cont; i++){
+                for(int j = i + 1; j < cont; j++){
+                    if(strcmp(aluno[i], aluno[j]) > 0){
+                        strcpy(saux, aluno[i]);
+                        strcpy(aluno[i], aluno[j]);
+                        strcpy(aluno[j], saux);
+                    }
+                }
+            }
+
+            for(int i = 0; i < cont; i++){
+                printf("\n%s", aluno[i]);
+            }
+
+            for (int i = 0; i < cont; i++) {
+                free(aluno[i]); // libera cada string individualmente
+            }
+            free(aluno);
+            break;
+        case 3:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+
+            while (temp != NULL) { //verifica a quantidade de alunos cadastrados e caulcula a idade em dias
+                temp->diasIdade = temp->anoNascimento * 365.3 + temp->mesNascimento * 30 + temp->diaNascimento;
+                cont++;
+                temp = temp->prox;
+            }
+            
+            int *idade = (int*) malloc(cont * sizeof(int));
+            char **alunos = (char**) malloc(cont * sizeof(char*)); // alocando matriz de strings
+
+            for (int i = 0; i < cont; i++) {
+                alunos[i] = (char*) malloc(TAM * sizeof(char));
+            }
+            
+            for(int i = 0; i < cont; i++){
+                idade[i] = aux->diasIdade;
+                strcpy(alunos[i], aux->nome);
+                aux = aux->prox;
+            }
+
+            int iaux;
+            char naux[TAM];
+
+            for(int i = 0; i < cont; i++){
+                for(int j = i + 1; j < cont; j++){
+                    if(idade[j] > idade[i]){
+                        iaux = idade[j];
+                        idade[j] = idade[i];
+                        idade[i] = iaux;
+                        strcpy(naux, alunos[j]);
+                        strcpy(alunos[j], alunos[i]);
+                        strcpy(alunos[i], naux);
+                    }
+                }
+                printf("\nAluno: %s", alunos[i]);
+            }
+            for (int i = 0; i < cont; i++) {
+                free(alunos[i]); // libera cada string individualmente
+            }
+            free(alunos);
+            free(idade);
+            break;
+        default:
+            break;
+    }
+
+
+    return SUCESSO;
 }
 
 int inserirAluno(struct Aluno **listaAluno){
