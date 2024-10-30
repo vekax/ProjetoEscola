@@ -52,6 +52,7 @@ int listarDetalhadamente(struct Disciplina *listaDisciplina){
 
             return SUCESSO;
         }
+        temp = temp->prox;
     }
 
     printf("Disciplina nao encontrada");
