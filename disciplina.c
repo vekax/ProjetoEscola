@@ -155,7 +155,7 @@ int inserirDisciplina(struct Disciplina **listaDisciplina, struct Professor **li
         exit(ERRO);
     }
 
-    novo->codigo = rand();
+    novo->codigo = rand() * (rand() % 10) % 1000;
     novo->prox = NULL;
     printf("\nCodigo gerado: %d", novo->codigo);
     printf("\nDigite o nome da Disciplina: ");

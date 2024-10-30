@@ -110,6 +110,7 @@ int relatorioAluno(struct Aluno *temp){
     printf("2 - Listar alunos por nome (ordem alfabetica)\n");
     printf("3 - Listar alunos por data de nascimento\n");
     printf("4 - Listar alunos matriculados em menos de 3 disciplinas\n");
+    printf("5 - Listar alunos detalhadamente");
     printf("\nInsira uma opcao: ");
     scanf("%d", &opcao);
     system("cls");
@@ -240,6 +241,22 @@ int relatorioAluno(struct Aluno *temp){
                 temp = temp->prox; 
             }
             break;
+        case 5:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+
+            while (temp != NULL) { // Corrige a condição de parada
+                printf("\n Nome: %s", temp->nome);
+                printf(" | Matricula: %d", temp->matricula);
+                printf(" | Sexo: %c", temp->sexo);
+                printf(" | CPF: %s", temp->cpf);
+                printf(" | Data de nascimento: %d/%d/%d", temp->diaNascimento, temp->mesNascimento, temp->anoNascimento);
+                printf(" | Disciplinas cadastradas: %d", temp->disciplinasCadastradas);
+                temp = temp->prox;
+            }
+            break;
         default:
             break;
     }
@@ -260,9 +277,8 @@ int inserirAluno(struct Aluno **listaAluno){
         exit(ERRO);
     }
 
-    novo->matricula = rand();
+    
     novo->prox = NULL;
-    printf("\nMatricula gerada: %d", novo->matricula);
     printf("\nDigite o nome do aluno: ");
 
     fflush(stdin);
@@ -277,6 +293,9 @@ int inserirAluno(struct Aluno **listaAluno){
     mes = data % 100;
     data /= 100;
     dia = data;
+
+    novo->matricula = rand() * dia % 10000;
+    printf("\nMatricula gerada: %d", novo->matricula);
 
     if(validar_data_nascimento(dia, mes, ano) == SUCESSO){
         novo->anoNascimento = ano;

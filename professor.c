@@ -86,6 +86,8 @@ int relatorioProfessor(struct Professor *temp){
     printf("1 - Listar professores por sexo\n");
     printf("2 - Listar professores por nome (ordem alfabetica)\n");
     printf("3 - Listar professores por data de nascimento\n");
+    printf("4 - Listar professores detalhadamente\n");
+    
     printf("\nInsira uma opcao: ");
     scanf("%d", &opcao);
     system("cls");
@@ -209,6 +211,21 @@ int relatorioProfessor(struct Professor *temp){
             free(professores);
             free(idade);
             break;
+        case 4:
+            if(temp == NULL){
+                printf("\nLista Vazia!");
+                return ERRO;
+            }
+
+            while (temp != NULL) { // Corrige a condição de parada
+                printf("\n Nome: %s", temp->nome);
+                printf(" | Matricula: %d", temp->matricula);
+                printf(" | Sexo: %c", temp->sexo);
+                printf(" | CPF: %s", temp->cpf);
+                printf(" | Data de nascimento: %d/%d/%d", temp->diaNascimento, temp->mesNascimento, temp->anoNascimento);
+                temp = temp->prox;
+            }
+            break;
         default:
             break;
     }
@@ -230,9 +247,7 @@ int inserirProfessor(struct Professor **listaProfessor){
         exit(ERRO);
     }
 
-    novo->matricula = rand();
     novo->prox = NULL;
-    printf("\nMatricula gerada: %d", novo->matricula);
     printf("\nDigite o nome do professor: ");
 
     fflush(stdin);
@@ -247,6 +262,9 @@ int inserirProfessor(struct Professor **listaProfessor){
     mes = data % 100;
     data /= 100;
     dia = data;
+
+    novo->matricula = rand() * dia % 10000;
+    printf("\nMatricula gerada: %d", novo->matricula);
 
     if(validar_data_nascimento(dia, mes, ano) == SUCESSO){
         novo->anoNascimento = ano;
